@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غزة عبر عين الرادار - Through the Radar Looking Glass: Gaza</title>
+    <meta name="description" content="كيف تكشف صور الرادار خفايا الأرض عندما تختفي الرؤية البصرية">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables - Theme Space */
+        :root {
+            --primary-blue: hsl(215, 70%, 65%);
+            --secondary-blue: hsl(200, 85%, 75%);
+            --radar-green: hsl(140, 65%, 65%);
+            --space-purple: hsl(260, 60%, 60%);
+            --space-dark: hsl(240, 40%, 10%);
+            --space-darker: hsl(240, 50%, 5%);
+            --star-color: hsl(60, 100%, 90%);
+            --nebula-color: hsl(280, 60%, 30%);
+            --background: hsl(240, 40%, 12%);
+            --foreground: hsl(0, 0%, 95%);
+            --muted: hsl(240, 30%, 20%);
+            --border: hsl(240, 30%, 30%);
+            --radius: 0.5rem;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Cairo', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            direction: rtl;
+            overflow-x: hidden;
+        }
+
+        /* Space Background */
+        .space-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--space-darker), var(--space-dark));
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star {
+            position: absolute;
+            background-color: var(--star-color);
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite var(--delay, 0s);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--space-purple), transparent);
+            box-shadow: 0 0 60px var(--space-purple);
+            opacity: 0.1;
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--nebula-color), transparent);
+            filter: blur(40px);
+            opacity: 0.1;
+        }
+
+        .font-arabic {
+            font-family: 'Amiri', serif;
+        }
+
+        .font-english {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Radar Scan Animation */
+        @keyframes radar-scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .radar-scan {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radar-scan::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.3), transparent);
+            animation: radar-scan 3s linear infinite;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: var(--foreground);
+        }
+
+        .lang-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(30, 30, 60, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        header.scrolled {
+            background: rgba(20, 20, 40, 0.95);
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--space-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+            box-shadow: 0 0 10px var(--primary-blue);
+        }
+
+        .logo-text {
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: var(--primary-blue);
+            text-shadow: 0 0 10px rgba(100, 150, 255, 0.5);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--foreground);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-blue);
+            text-shadow: 0 0 8px var(--primary-blue);
+        }
+
+        .nav-link.active {
+            color: var(--primary-blue);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            right: 0;
+            left: 0;
+            height: 2px;
+            background: var(--primary-blue);
+            box-shadow: 0 0 8px var(--primary-blue);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--foreground);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
+                        url('https://www.arabnews.com/sites/default/files/userimages/4181816/329e8jt-preview.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            text-align: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(135deg, var(--primary-blue), var(--space-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-family: 'Cairo', sans-serif;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            line-height: 1.8;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 2rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--space-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(100, 150, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 150, 255, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Sections */
+        section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+            font-family: 'Inter', sans-serif;
+            text-shadow: 0 0 10px rgba(100, 150, 255, 0.5);
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: var(--foreground);
+            opacity: 0.8;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Project Overview Section */
+        .project-overview {
+            background: linear-gradient(180deg, rgba(40, 40, 80, 0.7), rgba(30, 30, 60, 0.5));
+        }
+
+        .project-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--radar-green);
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .project-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--radar-green);
+            color: white;
+            box-shadow: 0 0 15px var(--radar-green);
+        }
+
+        .project-content {
+            line-height: 1.8;
+        }
+
+        .project-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .project-features {
+            margin: 2rem 0;
+            padding-right: 1.5rem;
+        }
+
+        .project-features li {
+            margin-bottom: 1rem;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+
+        .project-features li::before {
+            content: '✓';
+            position: absolute;
+            right: 0;
+            color: var(--radar-green);
+            font-weight: bold;
+        }
+
+        .project-summary {
+            background: rgba(40, 40, 80, 0.5);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-right: 4px solid var(--primary-blue);
+        }
+
+        /* SAR Explanation Section */
+        .sar-explanation {
+            background: linear-gradient(180deg, rgba(40, 40, 80, 0.7), rgba(30, 30, 60, 0.5));
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .info-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
+        }
+
+        .info-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--space-purple));
+            color: white;
+            box-shadow: 0 0 15px var(--primary-blue);
+        }
+
+        /* SAR Image Section */
+        .sar-image-section {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 3rem auto;
+            max-width: 1000px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+        }
+
+        .sar-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .source-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .source-link:hover {
+            border-color: var(--primary-blue);
+        }
+
+        /* Before/After Component */
+        .before-after {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .before-after-container {
+            position: relative;
+            height: 500px;
+        }
+
+        .after-image {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .before-image {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            clip-path: inset(0 50% 0 0);
+            transition: clip-path 0.3s ease;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: white;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: ew-resize;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-handle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2rem;
+            height: 2rem;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .before-label, .after-label {
+            position: absolute;
+            top: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 500;
+        }
+
+        .before-label {
+            right: 1rem;
+        }
+
+        .after-label {
+            left: 1rem;
+        }
+
+        /* Data Section */
+        .data-section {
+            background: linear-gradient(180deg, rgba(40, 40, 80, 0.7), rgba(30, 30, 60, 0.5));
+        }
+
+        .data-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .spec-card {
+            background: rgba(30, 30, 60, 0.7);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .spec-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 8px rgba(100, 150, 255, 0.5);
+        }
+
+        .spec-label {
+            font-size: 0.9rem;
+            color: var(--foreground);
+            opacity: 0.8;
+        }
+
+        /* Analysis Section */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .analysis-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            border-top: 4px solid var(--primary-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .analysis-card:hover {
+            transform: translateY(-5px);
+            border-top-color: var(--space-purple);
+        }
+
+        .analysis-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 0 10px var(--primary-blue);
+        }
+
+        /* Findings Section */
+        .findings-section {
+            background: linear-gradient(180deg, rgba(40, 40, 80, 0.7), rgba(30, 30, 60, 0.5));
+        }
+
+        .finding-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--radar-green);
+            backdrop-filter: blur(10px);
+        }
+
+        .finding-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .finding-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--radar-green);
+            color: white;
+            box-shadow: 0 0 10px var(--radar-green);
+        }
+
+        /* Key Results Section */
+        .key-results-section {
+            background: linear-gradient(180deg, rgba(40, 40, 80, 0.7), rgba(30, 30, 60, 0.5));
+        }
+
+        .key-results-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--radar-green);
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .key-results-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .key-results-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--radar-green);
+            color: white;
+            box-shadow: 0 0 15px var(--radar-green);
+        }
+
+        .key-results-content {
+            line-height: 1.8;
+        }
+
+        .key-results-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .key-results-list {
+            margin: 2rem 0;
+            padding-right: 1.5rem;
+        }
+
+        .key-results-list li {
+            margin-bottom: 1rem;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+
+        .key-results-list li::before {
+            content: '✓';
+            position: absolute;
+            right: 0;
+            color: var(--radar-green);
+            font-weight: bold;
+        }
+
+        /* Utility Classes */
+        .bg-muted {
+            background: var(--muted);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Updated styles for radar images - BIGGER CONTAINERS */
+        .radar-images-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .radar-image-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* تغيير من 400px إلى 100% */
+            max-width: 1000px; /* زيادة الحجم الأقصى */
+            margin: 0 auto 3rem auto;
+        }
+
+        .radar-image {
+            width: 100%;
+            height: 500px; /* زيادة من 300px إلى 500px */
+            object-fit: contain; /* تغيير من cover إلى contain للحفاظ على نسبة الأبعاد */
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            background-color: rgba(0, 0, 0, 0.1); /* خلفية داكنة للصور الشفافة */
+            cursor: zoom-in; /* مؤشر يدل على إمكانية التكبير */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .radar-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .radar-description {
+            text-align: center;
+            padding: 0 1rem;
+            font-size: 1rem; /* زيادة حجم الخط قليلاً */
+            line-height: 1.6;
+            color: var(--foreground);
+            opacity: 0.9;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* جدول المقارنة */
+        .comparison-table {
+            width: 100%;
+            max-width: 900px;
+            margin: 3rem auto;
+            border-collapse: collapse;
+            box-shadow: var(--shadow);
+            border-radius: 1rem;
+            overflow: hidden;
+            background: rgba(30, 30, 60, 0.7);
+            backdrop-filter: blur(10px);
+        }
+        
+        .comparison-table th, 
+        .comparison-table td {
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--space-purple));
+            color: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: rgba(40, 40, 80, 0.5);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(50, 50, 100, 0.5);
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: 600;
+            background: rgba(40, 40, 80, 0.3);
+        }
+        
+        .comparison-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(100, 150, 255, 0.5);
+        }
+
+        /* Gaza Details Styles */
+        .gaza-details-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .gaza-detail-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            border-top: 4px solid var(--primary-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .gaza-detail-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .gaza-detail-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+            text-shadow: 0 0 8px rgba(100, 150, 255, 0.5);
+        }
+
+        .gaza-detail-content {
+            line-height: 1.8;
+        }
+
+        .gaza-detail-content ul {
+            padding-right: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .gaza-detail-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .gaza-detail-content strong {
+            color: var(--primary-blue);
+        }
+
+        /* Resources Section Styles */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .resource-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            border-top: 4px solid var(--primary-blue);
+            backdrop-filter: blur(10px);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .resource-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 0 10px var(--primary-blue);
+        }
+
+        .resource-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1.5rem;
+        }
+
+        .resource-list li {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .resource-list li:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .resource-link {
+            display: block;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .resource-link:hover {
+            color: var(--secondary-blue);
+        }
+
+        .resource-description {
+            font-size: 0.9rem;
+            color: var(--foreground);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 0, 0, 0.7);
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .modal-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-prev {
+            left: 20px;
+        }
+
+        .modal-next {
+            right: 20px;
+        }
+
+        .modal-caption {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.25rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .info-grid, .analysis-grid, .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .language-switcher {
+                top: 0.5rem;
+                left: 0.5rem;
+            }
+
+            .data-specs {
+                grid-template-columns: 1fr;
+            }
+
+            .radar-image-item {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .radar-image {
+                height: 350px; /* تقليل الارتفاع قليلاً على الشاشات الصغيرة */
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+            
+            .comparison-table th, 
+            .comparison-table td {
+                padding: 0.75rem;
+            }
+
+            .project-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .modal-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+
+            .modal-prev {
+                left: 10px;
+            }
+
+            .modal-next {
+                right: 10px;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 4rem;
+            left: 0;
+            right: 0;
+            background: rgba(30, 30, 60, 0.95);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-nav-link {
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--foreground);
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: var(--muted);
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Space Background -->
+    <div class="space-background">
+        <div class="stars" id="stars"></div>
+        <div class="planet" style="width: 300px; height: 300px; top: 10%; right: 10%;"></div>
+        <div class="nebula" style="width: 500px; height: 500px; bottom: 10%; left: 10%;"></div>
+        <div class="planet" style="width: 150px; height: 150px; bottom: 20%; right: 20%;"></div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <button class="modal-close" id="modalClose">&times;</button>
+        <button class="modal-nav modal-prev" id="modalPrev">&#10094;</button>
+        <button class="modal-nav modal-next" id="modalNext">&#10095;</button>
+        <div class="modal-content">
+            <img src="" alt="" class="modal-image" id="modalImage">
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="ar">العربية</button>
+        <button class="lang-btn" data-lang="en">English</button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">SAR</div>
+                    <span class="logo-text" data-ar="غزة عبر الرادار" data-en="Gaza Through Radar">غزة عبر الرادار</span>
+                </a>
+
+                <nav>
+                    <a href="#" class="nav-link active" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+                    <a href="#project-overview" class="nav-link" data-ar="نظرة عامة" data-en="Overview">نظرة عامة</a>
+                    <a href="#sar" class="nav-link" data-ar="ما هو SAR؟" data-en="What is SAR?">ما هو SAR؟</a>
+                    <a href="#study-area" class="nav-link" data-ar="منطقة الدراسة" data-en="Study Area">منطقة الدراسة</a>
+                    <a href="#analysis" class="nav-link" data-ar="التحليل" data-en="Analysis">التحليل</a>
+                    <a href="#key-results" class="nav-link" data-ar="النتائج الرئيسية" data-en="Key Results">النتائج الرئيسية</a>
+                    <a href="#findings" class="nav-link" data-ar="النتائج" data-en="Findings">النتائج</a>
+                    <a href="#resources" class="nav-link" data-ar="المراجع" data-en="Resources">المراجع</a>
+                </nav>
+
+                <button class="mobile-menu-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu">
+            <a href="#" class="mobile-nav-link active" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+            <a href="#project-overview" class="mobile-nav-link" data-ar="نظرة عامة" data-en="Overview">نظرة عامة</a>
+            <a href="#sar" class="mobile-nav-link" data-ar="ما هو SAR؟" data-en="What is SAR?">ما هو SAR؟</a>
+            <a href="#study-area" class="mobile-nav-link" data-ar="منطقة الدراسة" data-en="Study Area">منطقة الدراسة</a>
+            <a href="#analysis" class="mobile-nav-link" data-ar="التحليل" data-en="Analysis">التحليل</a>
+            <a href="#key-results" class="mobile-nav-link" data-ar="النتائج الرئيسية" data-en="Key Results">النتائج الرئيسية</a>
+            <a href="#findings" class="mobile-nav-link" data-ar="النتائج" data-en="Findings">النتائج</a>
+            <a href="#resources" class="mobile-nav-link" data-ar="المراجع" data-en="Resources">المراجع</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero radar-scan">
+        <div class="hero-content">
+            <h1 class="hero-title" data-ar="غزة عبر عين الرادار" data-en="Through the Radar Looking Glass: Gaza">غزة عبر عين الرادار</h1>
+            <h2 class="hero-subtitle" data-ar="كشف أسرار الأرض عندما تختفي الرؤية البصرية" data-en="Revealing Earth's Secrets When Vision Disappears">كشف أسرار الأرض عندما تختفي الرؤية البصرية</h2>
+            <p class="hero-description" data-ar="كيف تكشف صور الرادار خفايا الأرض عندما تختفي الرؤية البصرية؟ اكتشف كيف يخترق الرادار الاصطناعي السحب والظلام والصراعات لرصد التغيرات البيئية في غزة." data-en="How can radar images reveal Earth's secrets when vision is obscured? Discover how Synthetic Aperture Radar penetrates clouds, darkness, and conflict to monitor environmental changes in Gaza.">
+                كيف تكشف صور الرادار خفايا الأرض عندما تختفي الرؤية البصرية؟ اكتشف كيف يخترق الرادار الاصطناعي السحب والظلام والصراعات لرصد التغيرات البيئية في غزة.
+            </p>
+            <div class="hero-buttons">
+                <a href="#project-overview" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span data-ar="اكتشف المشروع" data-en="Explore Project">اكتشف المشروع</span>
+                </a>
+                <a href="#analysis" class="btn btn-outline">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <span data-ar="شاهد التحليل" data-en="View Analysis">شاهد التحليل</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Overview Section -->
+    <section id="project-overview" class="project-overview">
+        <div class="container">
+            <h2 class="section-title fade-in" data-ar="نظرة عامة على المشروع" data-en="Project Overview">نظرة عامة على المشروع</h2>
+            <p class="section-subtitle fade-in" data-ar="تحويل البيانات العلمية المعقدة إلى خرائط بصرية تساعد في فهم آثار الحرب والتخطيط للمستقبل" data-en="Transforming complex scientific data into visual maps to understand war impacts and plan for the future">
+                تحويل البيانات العلمية المعقدة إلى خرائط بصرية تساعد في فهم آثار الحرب والتخطيط للمستقبل
+            </p>
+            
+            <div class="project-card fade-in">
+                <div class="project-header">
+                    <div class="project-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="تعريف المشروع" data-en="Project Definition">تعريف المشروع</h3>
+                </div>
+                
+                <div class="project-content">
+                    <p data-ar="يستخدم هذا المشروع بيانات الأقمار الصناعية من رادار الفتحة الاصطناعية (SAR) لدراسة غزة قبل الحرب وبعدها." 
+                       data-en="This project uses satellite data from Synthetic Aperture Radar (SAR) to study Gaza before and after the war.">
+                        يستخدم هذا المشروع بيانات الأقمار الصناعية من رادار الفتحة الاصطناعية (SAR) لدراسة غزة قبل الحرب وبعدها.
+                    </p>
+                    
+                    <p data-ar="قمنا بتحويل بيانات الرادار المعقدة (الاستقطاب VV و VH) إلى خرائط سهلة القراءة تُظهر التغيرات في المباني، الأراضي، والمناطق الزراعية المحتملة." 
+                       data-en="We have converted complex radar data (VV and VH polarization) into easy-to-read maps showing changes in buildings, lands, and potential agricultural areas.">
+                        قمنا بتحويل بيانات الرادار المعقدة (الاستقطاب VV و VH) إلى خرائط سهلة القراءة تُظهر التغيرات في المباني، الأراضي، والمناطق الزراعية المحتملة.
+                    </p>
+                    
+                    <p data-ar="الهدف هو جعل هذه البيانات متاحة ومفهومة للجميع – وليس للعلماء فقط." 
+                       data-en="The goal is to make this data accessible and understandable to everyone - not just scientists.">
+                        الهدف هو جعل هذه البيانات متاحة ومفهومة للجميع – وليس للعلماء فقط.
+                    </p>
+                    
+                    <h4 data-ar="من خلال خرائطنا يمكن للمستخدمين:" data-en="Through our maps, users can:">من خلال خرائطنا يمكن للمستخدمين:</h4>
+                    <ul class="project-features">
+                        <li data-ar="رؤية المناطق التي تعرضت لدمار شديد أو متوسط" 
+                            data-en="See areas that suffered severe or moderate destruction">
+                            رؤية المناطق التي تعرضت لدمار شديد أو متوسط
+                        </li>
+                        <li data-ar="تحديد المناطق الأكثر أماناً والأقل تضرراً" 
+                            data-en="Identify the safest and least damaged areas">
+                            تحديد المناطق الأكثر أماناً والأقل تضرراً
+                        </li>
+                        <li data-ar="فهم الأماكن التي يمكن إعادة استخدامها للزراعة أو إعادة الإعمار" 
+                            data-en="Understand places that can be reused for agriculture or reconstruction">
+                            فهم الأماكن التي يمكن إعادة استخدامها للزراعة أو إعادة الإعمار
+                        </li>
+                    </ul>
+                    
+                    <div class="project-summary">
+                        <p data-ar="👉 ببساطة: حولنا بيانات علمية من الأقمار الصناعية إلى خرائط بصرية تساعد الناس، المؤسسات، وصُنّاع القرار على فهم آثار الحرب والتخطيط للمستقبل." 
+                           data-en="👉 Simply put: We've transformed scientific satellite data into visual maps that help people, organizations, and decision-makers understand the impacts of war and plan for the future.">
+                            👉 ببساطة: حولنا بيانات علمية من الأقمار الصناعية إلى خرائط بصرية تساعد الناس، المؤسسات، وصُنّاع القرار على فهم آثار الحرب والتخطيط للمستقبل.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is SAR Section -->
+    <section id="sar" class="sar-explanation">
+        <div class="container">
+            <h2 class="section-title fade-in" data-ar="ما هو الرادار الاصطناعي؟" data-en="What is Synthetic Aperture Radar?">ما هو الرادار الاصطناعي؟</h2>
+            <p class="section-subtitle fade-in" data-ar="تقنية متطورة للاستشعار عن بعد تستخدم إشارات الرادار لإنشاء صور مفصلة لسطح الأرض" data-en="Advanced remote sensing technology using radar signals to create detailed images of Earth's surface">
+                تقنية متطورة للاستشعار عن بعد تستخدم إشارات الرادار لإنشاء صور مفصلة لسطح الأرض
+            </p>
+            
+            <!-- SAR Image Section -->
+            <div class="sar-image-section fade-in">
+                <h3 data-ar="تقنية الرادار الاصطناعي (SAR)" data-en="Synthetic Aperture Radar (SAR) Technology">تقنية الرادار الاصطناعي (SAR)</h3>
+                <img src="https://assets.science.nasa.gov/dynamicimage/assets/science/missions/nisar/nisar-jpl/images/SAR1.jpg?w=974&h=572&fit=clip&crop=faces%2Cfocalpoint" 
+                     alt="شرح الرادار الاصطناعي" 
+                     class="sar-image">
+                <p data-ar="الرادار الاصطناعي (SAR) يشير إلى تقنية لإنتاج صور بدقة عالية من نظام رادار محدود الدقة. يتطلب ذلك أن يتحرك الرادار في خط مستقيم، إما على طائرة أو، كما في حالة NISAR، يدور في الفضاء. على عكس أجهزة الاستشعار البصرية، يمكن لـ SAR مراقبة الأرض ليلاً أو نهارًا ومن خلال السحب أو الدخان أو المطر. تستخدم ناسا هذه القدرة لمراقبة الغابات والأنهار الجليدية والفيضانات والزلازل والتغيرات في البنية التحتية." 
+                   data-en="Synthetic aperture radar (SAR) refers to a technique for producing fine-resolution images from a resolution-limited radar system. It requires that the radar be moving in a straight line, either on an airplane or, as in the case of NISAR, orbiting in space. Unlike optical sensors, SAR can observe the Earth day or night and through clouds, smoke, or rain. NASA uses this capability to monitor forests, glaciers, floods, earthquakes, and changes in infrastructure.">
+                    الرادار الاصطناعي (SAR) يشير إلى تقنية لإنتاج صور بدقة عالية من نظام رادار محدود الدقة. يتطلب ذلك أن يتحرك الرادار في خط مستقيم، إما على طائرة أو، كما في حالة NISAR، يدور في الفضاء. على عكس أجهزة الاستشعار البصرية، يمكن لـ SAR مراقبة الأرض ليلاً أو نهارًا ومن خلال السحب أو الدخان أو المطر. تستخدم ناسا هذه القدرة لمراقبة الغابات والأنهار الجليدية والفيضانات والزلازل والتغيرات في البنية التحتية.
+                </p>
+                <a href="https://science.nasa.gov/mission/nisar/get-to-know-sar/" target="_blank" class="source-link" data-ar="المصدر: NASA - Synthetic Aperture Radar (SAR)" data-en="Source: NASA - Synthetic Aperture Radar (SAR)">
+                    المصدر: NASA - Synthetic Aperture Radar (SAR)
+                </a>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-card fade-in">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="التصوير في جميع الأحوال الجوية" data-en="All-Weather Imaging">التصوير في جميع الأحوال الجوية</h3>
+                    <p data-ar="يعمل الرادار عبر السحب والمطر والظلام، مما يوفر رصدًا مستمرًا للأرض" data-en="SAR works through clouds, rain, and darkness, providing continuous Earth observation">
+                        يعمل الرادار عبر السحب والمطر والظلام، مما يوفر رصدًا مستمرًا للأرض
+                    </p>
+                </div>
+                
+                <div class="info-card fade-in">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+                            <path d="M12 8v4l3 3"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="أمواج الرادار" data-en="Radar Waves">أمواج الرادار</h3>
+                    <p data-ar="يستخدم الإشعاع الميكروي لإضاءة سطح الأرض وإنشاء صور تفصيلية من الإشارات المنعكسة" data-en="Uses microwave radiation to illuminate Earth's surface and create detailed images from reflected signals">
+                        يستخدم الإشعاع الميكروي لإضاءة سطح الأرض وإنشاء صور تفصيلية من الإشارات المنعكسة
+                    </p>
+                </div>
+                
+                <div class="info-card fade-in">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path d="M2 12h4m14 0h4M12 2v4m0 14v4"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="دقة عالية" data-en="High Resolution">دقة عالية</h3>
+                    <p data-ar="تقنية الفتحة الاصطناعية تخلق صورًا مفصلة بدقة تصل إلى بضعة أمتار من مئات الكيلومترات" data-en="Synthetic aperture technology creates detailed images with resolution down to a few meters from hundreds of kilometers away">
+                        تقنية الفتحة الاصطناعية تخلق صورًا مفصلة بدقة تصل إلى بضعة أمتار من مئات الكيلومترات
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Study Area Section -->
+    <section id="study-area">
+        <div class="container">
+            <h2 class="section-title fade-in" data-ar="منطقة الدراسة: قطاع غزة" data-en="Study Area: Gaza Strip">منطقة الدراسة: قطاع غزة</h2>
+            <p class="section-subtitle fade-in" data-ar="فهم السياق الجغرافي والديموغرافي لإحدى أكثر المناطق كثافة سكانية في العالم" data-en="Understanding the geographic and demographic context of one of the world's most densely populated regions">
+                فهم السياق الجغرافي والديموغرافي لإحدى أكثر المناطق كثافة سكانية في العالم
+            </p>
+            
+            <!-- Gaza Information Section -->
+            <div class="info-grid">
+                <div class="info-card fade-in">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="السكان" data-en="Population">السكان</h3>
+                    <p data-ar="حوالي 2.1 مليون (انخفاض بعد الحرب، كان 2.3 مليون)" data-en="~2.1M (decreased after war, was 2.3M)">
+                        حوالي 2.1 مليون (انخفاض بعد الحرب، كان 2.3 مليون)
+                    </p>
+                </div>
+                
+                <div class="info-card fade-in">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="المساحة" data-en="Area">المساحة</h3>
+                    <p data-ar="ثابتة تقريباً 365 كم²" data-en="~365 km² (almost constant)">
+                        ثابتة تقريباً 365 كم²
+                    </p>
+                </div>
+                
+                <div class="info-card fade-in">
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>
+                            <line x1="2" y1="20" x2="22" y2="20"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="الكثافة السكانية" data-en="Population Density">الكثافة السكانية</h3>
+                    <p data-ar="حوالي 5,750 شخص/كم² (أعلى في مناطق النزوح)" data-en="~5,750/km² (higher in displacement areas)">
+                        حوالي 5,750 شخص/كم² (أعلى في مناطق النزوح)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Before/After Section -->
+            <div class="before-after fade-in">
+                <div class="before-after-container">
+                    <div class="after-image" style="background-image: url('https://4.bp.blogspot.com/-kBowp91gX7A/UmllRRLmGpI/AAAAAAAAN58/aoPtbsXQZgI/s1600/178969_528190373859556_538280107_n.jpg')"></div>
+                    <div class="before-image" style="background-image: url('https://akm-img-a-in.tosshub.com/indiatoday/images/story/202311/gaza-214552237-16x9_0.jpg?VersionId=BMpYD1MkctI_fZzrIMtrXKCIsQqP.3cz&size=690:388')"></div>
+                    <div class="slider-handle"></div>
+                    <div class="before-label" data-ar="قبل الحرب" data-en="Before War">قبل الحرب</div>
+                    <div class="after-label" data-ar="بعد الحرب" data-en="After War">بعد الحرب</div>
+                </div>
+            </div>
+
+            <!-- Gaza Details Section -->
+            <div class="gaza-details-container">
+                <div class="gaza-detail-card fade-in">
+                    <h3 class="gaza-detail-title" data-ar="غزة قبل الحرب" data-en="Gaza Before War">غزة قبل الحرب</h3>
+                    <div class="gaza-detail-content">
+                        <ul>
+                            <li data-ar="<strong>المساحة:</strong> حوالي 365 كم² (شريط ساحلي ضيق على المتوسط)" 
+                                data-en="<strong>Area:</strong> About 365 km² (a narrow coastal strip on the Mediterranean)">
+                                <strong>المساحة:</strong> حوالي 365 كم² (شريط ساحلي ضيق على المتوسط)
+                            </li>
+                            <li data-ar="<strong>السكان:</strong> نحو 2.3 مليون نسمة، واحدة من أكثر المناطق كثافة سكانية في العالم" 
+                                data-en="<strong>Population:</strong> About 2.3 million people, one of the most densely populated areas in the world">
+                                <strong>السكان:</strong> نحو 2.3 مليون نسمة، واحدة من أكثر المناطق كثافة سكانية في العالم
+                            </li>
+                            <li data-ar="<strong>العمران:</strong> مدن مزدحمة (غزة، خان يونس، رفح) مع مخيمات لاجئين كبيرة" 
+                                data-en="<strong>Urbanization:</strong> Crowded cities (Gaza, Khan Younis, Rafah) with large refugee camps">
+                                <strong>العمران:</strong> مدن مزدحمة (غزة، خان يونس، رفح) مع مخيمات لاجئين كبيرة
+                            </li>
+                            <li data-ar="<strong>الزراعة:</strong> حوالي 35% من الأرض للزراعة (حمضيات، زيتون، خضروات)" 
+                                data-en="<strong>Agriculture:</strong> About 35% of the land for agriculture (citrus, olives, vegetables)">
+                                <strong>الزراعة:</strong> حوالي 35% من الأرض للزراعة (حمضيات، زيتون، خضروات)
+                            </li>
+                            <li data-ar="<strong>البنية التحتية:</strong> كهرباء ومياه متوفرة، شبكة طرق، موانئ صيد، مطار قديم متوقف، جامعات حديثة ومستشفيات مجهزة" 
+                                data-en="<strong>Infrastructure:</strong> Available electricity and water, road network, fishing ports, old inactive airport, modern universities and equipped hospitals">
+                                <strong>البنية التحتية:</strong> كهرباء ومياه متوفرة، شبكة طرق، موانئ صيد، مطار قديم متوقف، جامعات حديثة ومستشفيات مجهزة
+                            </li>
+                            <li data-ar="<strong>الوضع الاقتصادي:</strong> زراعة وصيد نشط، صناعات خفيفة وتجارية، أسواق محلية حيوية، فرص عمل واسعة نسبياً، صادرات زراعية وصناعية محدودة" 
+                                data-en="<strong>Economic Situation:</strong> Active agriculture and fishing, light and commercial industries, vibrant local markets, relatively wide employment opportunities, limited agricultural and industrial exports">
+                                <strong>الوضع الاقتصادي:</strong> زراعة وصيد نشط، صناعات خفيفة وتجارية، أسواق محلية حيوية، فرص عمل واسعة نسبياً، صادرات زراعية وصناعية محدودة
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="gaza-detail-card fade-in">
+                    <h3 class="gaza-detail-title" data-ar="غزة بعد الحرب (2023–2025)" data-en="Gaza After War (2023-2025)">غزة بعد الحرب (2023–2025)</h3>
+                    <div class="gaza-detail-content">
+                        <ul>
+                            <li data-ar="<strong>السكان:</strong> انخفاض ملحوظ بسبب الضحايا والنزوح؛ التقديرات تشير إلى أن مئات الآلاف نزحوا داخلياً وخارجياً" 
+                                data-en="<strong>Population:</strong> Significant decrease due to casualties and displacement; estimates indicate hundreds of thousands displaced internally and externally">
+                                <strong>السكان:</strong> انخفاض ملحوظ بسبب الضحايا والنزوح؛ التقديرات تشير إلى أن مئات الآلاف نزحوا داخلياً وخارجياً
+                            </li>
+                            <li data-ar="<strong>العمران:</strong> تدمير واسع للأحياء السكنية (خصوصًا مدينة غزة والشمال)، آلاف المباني مهدمة أو غير صالحة للسكن" 
+                                data-en="<strong>Urbanization:</strong> Widespread destruction of residential neighborhoods (especially Gaza City and the North), thousands of buildings demolished or uninhabitable">
+                                <strong>العمران:</strong> تدمير واسع للأحياء السكنية (خصوصًا مدينة غزة والشمال)، آلاف المباني مهدمة أو غير صالحة للسكن
+                            </li>
+                            <li data-ar="<strong>الزراعة:</strong> مساحات كبيرة من الأراضي الزراعية دُمّرت أو أُحرقت، انهيار كبير في الإنتاج الغذائي" 
+                                data-en="<strong>Agriculture:</strong> Large areas of agricultural land destroyed or burned, major collapse in food production">
+                                <strong>الزراعة:</strong> مساحات كبيرة من الأراضي الزراعية دُمّرت أو أُحرقت، انهيار كبير في الإنتاج الغذائي
+                            </li>
+                            <li data-ar="<strong>البنية التحتية:</strong> كهرباء شبه معدومة، محطات المياه والصرف الصحي معطلة، معظم المستشفيات خارجة عن الخدمة أو تعمل بإمكانيات ضئيلة" 
+                                data-en="<strong>Infrastructure:</strong> Almost no electricity, water and sanitation stations out of service, most hospitals out of service or operating with minimal capabilities">
+                                <strong>البنية التحتية:</strong> كهرباء شبه معدومة، محطات المياه والصرف الصحي معطلة، معظم المستشفيات خارجة عن الخدمة أو تعمل بإمكانيات ضئيلة
+                            </li>
+                            <li data-ar="<strong>الوضع الاقتصادي:</strong> انهيار كامل تقريبًا؛ بطالة شاملة، اعتماد شبه كامل على الإغاثة" 
+                                data-en="<strong>Economic Situation:</strong> Almost complete collapse; comprehensive unemployment, almost complete dependence on relief">
+                                <strong>الوضع الاقتصادي:</strong> انهيار كامل تقريبًا؛ بطالة شاملة، اعتماد شبه كامل على الإغاثة
+                            </li>
+                            <li data-ar="<strong>الجانب الإنساني:</strong> أزمة غذاء حادة، انتشار الأمراض، نزوح جماعي، ظروف معيشية صعبة جدًا" 
+                                data-en="<strong>Humanitarian Aspect:</strong> Severe food crisis, spread of diseases, mass displacement, very difficult living conditions">
+                                <strong>الجانب الإنساني:</strong> أزمة غذاء حادة، انتشار الأمراض، نزوح جماعي، ظروف معيشية صعبة جدًا
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section id="analysis">
+        <div class="container">
+            <h2 class="section-title fade-in" data-ar="تحليل صور الرادار" data-en="SAR Image Analysis">تحليل صور الرادار</h2>
+            <p class="section-subtitle fade-in" data-ar="تفسير إشارات الرادار لفهم مناظر غزة الطبيعية وتحديد أنواع الغطاء الأرضي المختلفة" data-en="Interpreting radar signatures to understand Gaza's landscape and identify different land cover types">
+                تفسير إشارات الرادار لفهم مناظر غزة الطبيعية وتحديد أنواع الغطاء الأرضي المختلفة
+            </p>
+            
+            <!-- جدول المقارنة المحدث -->
+            <div class="fade-in">
+                <h3 class="comparison-title" data-ar="مقارنة خصائص استقطابات الرادار VV و VH" 
+                    data-en="Comparison of VV and VH Radar Polarization Characteristics">
+                    مقارنة خصائص استقطابات الرادار VV و VH
+                </h3>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th data-ar="الخاصية" data-en="Feature">الخاصية</th>
+                            <th data-ar="الاستقطاب VV" data-en="VV Polarization">الاستقطاب VV</th>
+                            <th data-ar="الاستقطاب VH" data-en="VH Polarization">الاستقطاب VH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-ar="الاستجابة من السطح" data-en="Surface Response">الاستجابة من السطح</td>
+                            <td data-ar="حساس جدًا للسطوح الملساء (ماء، أرض مكشوفة) → يظهر غامق (انعكاس قليل). إذا كان فيه مباني أو أجسام رأسية (أعمدة، جدران) → يرجع انعكاس قوي" 
+                                data-en="Very sensitive to smooth surfaces (water, bare ground) → appears dark (low reflection). If there are buildings or vertical objects (poles, walls) → returns strong reflection">
+                                حساس جدًا للسطوح الملساء (ماء، أرض مكشوفة) → يظهر غامق (انعكاس قليل). إذا كان فيه مباني أو أجسام رأسية (أعمدة، جدران) → يرجع انعكاس قوي
+                            </td>
+                            <td data-ar="يقيس الانعكاس من النسيج العشوائي (فروع، أوراق، غطاء نباتي كثيف)" 
+                                data-en="Measures reflection from random texture (branches, leaves, dense vegetation cover)">
+                                يقيس الانعكاس من النسيج العشوائي (فروع، أوراق، غطاء نباتي كثيف)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-ar="بالنسبة للزراعة" data-en="Regarding Agriculture">بالنسبة للزراعة</td>
+                            <td data-ar="المناطق اللي فيها تربة مبلولة أو سطح أملس تعطي إشارات ضعيفة. المناطق اللي فيها هيكل نباتي قائم (محاصيل، أشجار واقفة) تعطي إشارات أقوى" 
+                                data-en="Areas with wet soil or smooth surface give weak signals. Areas with standing plant structure (crops, standing trees) give stronger signals">
+                                المناطق اللي فيها تربة مبلولة أو سطح أملس تعطي إشارات ضعيفة. المناطق اللي فيها هيكل نباتي قائم (محاصيل، أشجار واقفة) تعطي إشارات أقوى
+                            </td>
+                            <td data-ar="يدل أكثر على كثافة الغطاء النباتي والتغيّر في النباتات الصغيرة والفروع" 
+                                data-en="Indicates more about vegetation density and changes in small plants and branches">
+                                يدل أكثر على كثافة الغطاء النباتي والتغيّر في النباتات الصغيرة والفروع
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-ar="التطبيقات العملية" data-en="Practical Applications">التطبيقات العملية</td>
+                            <td data-ar="يقيس الانعكاس من أسطح مستقيمة أو رأسية (مباني، تربة رطبة، نبات قائم)" 
+                                data-en="Measures reflection from straight or vertical surfaces (buildings, moist soil, standing plants)">
+                                يقيس الانعكاس من أسطح مستقيمة أو رأسية (مباني، تربة رطبة، نبات قائم)
+                            </td>
+                            <td data-ar="مفيد لتقييم كثافة الغطاء النباتي ومراقبة النمو والتغيرات في الغطاء النباتي" 
+                                data-en="Useful for assessing vegetation density and monitoring growth and changes in vegetation cover">
+                                مفيد لتقييم كثافة الغطاء النباتي ومراقبة النمو والتغيرات في الغطاء النباتي
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4 صور رادارية حقيقية بدلاً من المساحات الفارغة -->
+            <div class="radar-images-container fade-in">
+                <!-- الصورة الأولى: VV (تغير المباني) -->
+                <div class="radar-image-item">
+                    <img src="image.png" 
+                         alt="تحليل تغيرات المباني باستخدام استقطاب VV" 
+                         class="radar-image zoomable-image"
+                         data-caption="تصنيف VV – تغيّر المباني">
+                    <p class="radar-description" data-ar="<strong>تصنيف VV – تغيّر المباني</strong><br>
+تستخدم هذه الخريطة استقطاب VV من رادار SAR للكشف عن التغيرات في مباني غزة قبل الحرب وبعدها. ويُظهر التصنيف مستويات مختلفة من الأضرار:<br>
+<strong>أسود (خسارة جسيمة):</strong> مناطق تعرضت لدمار واسع حيث تضررت أو انهارت العديد من المباني بالكامل.<br>
+<strong>أحمر (خسارة متوسطة):</strong> مواقع تضررت فيها المباني لكن لم تُدمَّر بشكل كامل.<br>
+<strong>بني (تغير طفيف):</strong> مناطق حدثت فيها تغييرات بسيطة، قد تكون أضراراً جزئية أو أنقاضاً محدودة.<br>
+<strong>أخضر (لا تغيير):</strong> أماكن لم يُرصد فيها تغير يُذكر، حيث بقيت المباني والأراضي كما هي تقريباً.<br>
+من خلال تحليل بيانات VV يمكننا تحديد المناطق الأكثر تضرراً بوضوح مقارنةً بالمناطق المستقرة. هذه المعلومات أساسية لتقدير حجم الدمار والتخطيط لإعادة إعمار غزة في المستقبل." 
+                         data-en="<strong>VV Classification – Buildings Changed</strong><br>
+This map uses VV polarization from SAR radar to detect changes in Gaza’s buildings before and after the war. The classification highlights different levels of damage:<br>
+<strong>Black (Severe Loss):</strong> Areas with the most destruction, where many buildings were completely damaged or collapsed.<br>
+<strong>Red (Moderate Loss):</strong> Locations where buildings were damaged but not fully destroyed.<br>
+<strong>Brown (Minor Change):</strong> Areas with slight changes, possibly small structural damage or partial debris.<br>
+<strong>Green (No Change):</strong> Places where no significant change was detected, buildings and land remain mostly intact.<br>
+By analyzing VV data, we can clearly identify which zones suffered the heaviest damage and which areas remained stable. This information is critical for damage assessment and future reconstruction planning in Gaza.">
+                        <strong>تصنيف VV – تغيّر المباني</strong><br>
+                        تستخدم هذه الخريطة استقطاب VV من رادار SAR للكشف عن التغيرات في مباني غزة قبل الحرب وبعدها. ويُظهر التصنيف مستويات مختلفة من الأضرار:<br>
+                        <strong>أسود (خسارة جسيمة):</strong> مناطق تعرضت لدمار واسع حيث تضررت أو انهارت العديد من المباني بالكامل.<br>
+                        <strong>أحمر (خسارة متوسطة):</strong> مواقع تضررت فيها المباني لكن لم تُدمَّر بشكل كامل.<br>
+                        <strong>بني (تغير طفيف):</strong> مناطق حدثت فيها تغييرات بسيطة، قد تكون أضراراً جزئية أو أنقاضاً محدودة.<br>
+                        <strong>أخضر (لا تغيير):</strong> أماكن لم يُرصد فيها تغير يُذكر، حيث بقيت المباني والأراضي كما هي تقريباً.<br>
+                        من خلال تحليل بيانات VV يمكننا تحديد المناطق الأكثر تضرراً بوضوح مقارنةً بالمناطق المستقرة. هذه المعلومات أساسية لتقدير حجم الدمار والتخطيط لإعادة إعمار غزة في المستقبل.
+                    </p>
+                </div>
+                
+                <!-- الصورة الثانية: VH (تغير الغطاء النباتي) -->
+                <div class="radar-image-item">
+                    <img src="VH.png" 
+                         alt="تحليل تغيرات الغطاء النباتي باستخدام استقطاب VH" 
+                         class="radar-image zoomable-image"
+                         data-caption="تصنيف VH – تغيّر الغطاء النباتي">
+                    <p class="radar-description" data-ar="<strong>تصنيف VH – تغيّر الغطاء النباتي</strong><br>
+تستخدم هذه الخريطة استقطاب VH من رادار SAR للكشف عن التغيرات في الغطاء النباتي في غزة قبل الحرب وبعدها. ويُظهر التصنيف مستويات مختلفة من تضرر النباتات أو تعافيها:<br>
+<strong>أسود (خسارة جسيمة):</strong> مناطق شهدت تراجعاً كبيراً في الغطاء النباتي، حيث فقدت المحاصيل أو الغطاء الطبيعي بشكل شبه كامل.<br>
+<strong>أحمر (خسارة متوسطة):</strong> مناطق تعرضت لأضرار جزئية في الغطاء النباتي مع انخفاض ملحوظ في كثافة النباتات.<br>
+<strong>أصفر (لا تغيير):</strong> مناطق بقي فيها الغطاء النباتي مستقراً من دون تغيرات كبيرة.<br>
+<strong>أخضر (نمو):</strong> مناطق زاد فيها الغطاء النباتي، ما يشير إلى نمو جديد أو تعافٍ بعد الأضرار.<br>
+من خلال تحليل بيانات VH يمكننا تحديد المناطق التي عانت من فقدان كبير للغطاء النباتي وتلك التي أظهرت قدرة على الصمود أو التجدد. هذه المعلومات ضرورية لتقييم الأضرار البيئية، آثارها على الزراعة، وإمكانات تعافي الأراضي في غزة." 
+                         data-en="<strong>VH Classification – Plants Change</strong><br>
+This map uses VH polarization from SAR radar to detect vegetation changes in Gaza before and after the war. The classification highlights different levels of plant damage or recovery:<br>
+<strong>Black (Severe Loss):</strong> Areas with the most significant vegetation decrease, where crops or natural cover were almost completely lost.<br>
+<strong>Red (Moderate Loss):</strong> Zones with partial vegetation damage, showing moderate reduction in plant density.<br>
+<strong>Yellow (No Change):</strong> Areas where vegetation remained stable, with no major change detected.<br>
+<strong>Green (Growth):</strong> Regions where vegetation increased, indicating new plant growth or recovery after damage.<br>
+By analyzing VH data, we can clearly identify which regions suffered heavy vegetation loss and which areas showed resilience or regrowth. This information is essential for assessing environmental damage, agricultural impacts, and land recovery potential in Gaza.">
+                        <strong>تصنيف VH – تغيّر الغطاء النباتي</strong><br>
+                        تستخدم هذه الخريطة استقطاب VH من رادار SAR للكشف عن التغيرات في الغطاء النباتي في غزة قبل الحرب وبعدها. ويُظهر التصنيف مستويات مختلفة من تضرر النباتات أو تعافيها:<br>
+                        <strong>أسود (خسارة جسيمة):</strong> مناطق شهدت تراجعاً كبيراً في الغطاء النباتي، حيث فقدت المحاصيل أو الغطاء الطبيعي بشكل شبه كامل.<br>
+                        <strong>أحمر (خسارة متوسطة):</strong> مناطق تعرضت لأضرار جزئية في الغطاء النباتي مع انخفاض ملحوظ في كثافة النباتات.<br>
+                        <strong>أصفر (لا تغيير):</strong> مناطق بقي فيها الغطاء النباتي مستقراً من دون تغيرات كبيرة.<br>
+                        <strong>أخضر (نمو):</strong> مناطق زاد فيها الغطاء النباتي، ما يشير إلى نمو جديد أو تعافٍ بعد الأضرار.<br>
+                        من خلال تحليل بيانات VH يمكننا تحديد المناطق التي عانت من فقدان كبير للغطاء النباتي وتلك التي أظهرت قدرة على الصمود أو التجدد. هذه المعلومات ضرورية لتقييم الأضرار البيئية، آثارها على الزراعة، وإمكانات تعافي الأراضي في غزة.
+                    </p>
+                </div>
+                
+                <!-- الصورة الثالثة: صورة ناسا الأصلية -->
+                <div class="radar-image-item">
+                    <img src="image3.png" 
+                         alt="صورة رادارية لغزة تظهر التغيرات الحضرية" 
+                         class="radar-image zoomable-image"
+                         data-caption="تحليل الرادار (استقطاب VH) قبل الحرب وبعدها في غزة">
+                    <p class="radar-description" data-ar="تحليل الرادار (استقطاب VH) قبل الحرب وبعدها في غزة
+تُظهر هذه الصورة بيانات الرادار باستقطاب **إرسال عمودي – استقبال أفقي (VH)** الملتقطة قبل الحرب وبعدها.
+تشير الدرجات الحمراء إلى مناطق ذات ارتداد قوي لإشارة الرادار، وغالباً ما تكون مرتبطة بالمباني، البنية التحتية، أو الغطاء النباتي الكثيف. أما المناطق الداكنة فتُشير إلى فقدان الإشارة، مما قد يعكس تدمير المباني أو فقدان الغطاء النباتي.
+
+من خلال مقارنة الصورتين، نلاحظ أنه بعد الحرب ظهرت مساحات أكبر من المنطقة باللون الداكن، ما يدل على دمار واسع أو تدهور في أماكن كانت تُظهر ارتداداً قوياً سابقاً. هذه المقارنات تقدم رؤى مهمة لتقدير الأضرار وتحديد المناطق التي تحتاج إلى إعادة إعمار أو إعادة زراعة.
+" 
+                         data-en="Radar Analysis (VH Polarization) Before and After the War in Gaza
+This figure shows the Vertical Transmit – Horizontal Receive (VH) radar images taken before and after the war.
+The red tones represent areas with stronger radar backscatter, usually linked to buildings, infrastructure, or dense vegetation. Darker areas, in contrast, indicate a loss of signal, which may reflect destroyed structures or loss of vegetation cover.
+By comparing the two images, we can see that after the war, larger portions of the area appear darker. This suggests significant destruction or degradation in places that previously showed strong radar returns. Such comparisons provide valuable insights for assessing damage and identifying regions that require reconstruction or replanting.">
+                      تحليل الرادار (استقطاب VH) قبل الحرب وبعدها في غزة
+تُظهر هذه الصورة بيانات الرادار باستقطاب **إرسال عمودي – استقبال أفقي (VH)** الملتقطة قبل الحرب وبعدها.
+تشير الدرجات الحمراء إلى مناطق ذات ارتداد قوي لإشارة الرادار، وغالباً ما تكون مرتبطة بالمباني، البنية التحتية، أو الغطاء النباتي الكثيف. أما المناطق الداكنة فتُشير إلى فقدان الإشارة، مما قد يعكس تدمير المباني أو فقدان الغطاء النباتي.
+
+من خلال مقارنة الصورتين، نلاحظ أنه بعد الحرب ظهرت مساحات أكبر من المنطقة باللون الداكن، ما يدل على دمار واسع أو تدهور في أماكن كانت تُظهر ارتداداً قوياً سابقاً. هذه المقارنات تقدم رؤى مهمة لتقدير الأضرار وتحديد المناطق التي تحتاج إلى إعادة إعمار أو إعادة زراعة.
+
+                    </p>
+                </div>
+                
+                <!-- الصورة الرابعة: الصورة المركبة -->
+                <div class="radar-image-item">
+                    <img src="image (1).png" 
+                         alt="مقارنة بين المناطق الحضرية والزراعية في غزة" 
+                         class="radar-image zoomable-image"
+                         data-caption="تحليل الرادار (استقطاب VV) قبل الحرب وبعدها في غزة">
+                    <p class="radar-description" data-ar="تحليل الرادار (استقطاب VV) قبل الحرب وبعدها في غزة
+تُظهر هذه الصورة بيانات الرادار باستقطاب **إرسال عمودي – استقبال عمودي (VV)** الملتقطة قبل الحرب وبعدها.
+تشير الدرجات الخضراء إلى مناطق ذات انعكاسات قوية من السطح، وغالباً ما ترتبط بالمنشآت البشرية، الطرق، والتربة المكشوفة. أما المناطق الداكنة فتُظهر انعكاسات أضعف للرادار، وغالباً ما ترتبط بفقدان الغطاء النباتي أو تضرر الأسطح.
+
+من خلال مقارنة الصورتين، يمكننا ملاحظة تغييرات واضحة في شدة وتوزيع الأنماط الخضراء. بعد الحرب، ظهرت بعض المناطق أغمق أو أقل انعكاساً، ما يشير إلى تدمير المباني وتضرر سطح الأرض. تساعد هذه التباينات في تقييم حجم الأضرار وتحديد المناطق ذات الأولوية للتعافي وإعادة الإعمار.
+" 
+                         data-en="Radar Analysis (VV Polarization) Before and After the War in Gaza
+This figure presents the Vertical Transmit – Vertical Receive (VV) radar images before and after the war.
+The green tones highlight areas with strong surface reflections, which are typically associated with man-made structures, roads, and bare soil. Darker zones, on the other hand, indicate weaker radar returns, often corresponding to vegetation loss or damaged surfaces.
+By comparing the two images, we can observe clear changes in the intensity and distribution of the green patterns. After the war, some regions appear darker or less reflective, suggesting destruction of built-up areas and disturbances to the land surface. These variations help in assessing the extent of damage and identifying priority zones for recovery and reconstruction.">
+                       تحليل الرادار (استقطاب VV) قبل الحرب وبعدها في غزة
+تُظهر هذه الصورة بيانات الرادار باستقطاب **إرسال عمودي – استقبال عمودي (VV)** الملتقطة قبل الحرب وبعدها.
+تشير الدرجات الخضراء إلى مناطق ذات انعكاسات قوية من السطح، وغالباً ما ترتبط بالمنشآت البشرية، الطرق، والتربة المكشوفة. أما المناطق الداكنة فتُظهر انعكاسات أضعف للرادار، وغالباً ما ترتبط بفقدان الغطاء النباتي أو تضرر الأسطح.
+
+من خلال مقارنة الصورتين، يمكننا ملاحظة تغييرات واضحة في شدة وتوزيع الأنماط الخضراء. بعد الحرب، ظهرت بعض المناطق أغمق أو أقل انعكاساً، ما يشير إلى تدمير المباني وتضرر سطح الأرض. تساعد هذه التباينات في تقييم حجم الأضرار وتحديد المناطق ذات الأولوية للتعافي وإعادة الإعمار.
+
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Results Section -->
+    <section id="key-results" class="key-results-section">
+        <div class="container">
+            <h2 class="section-title fade-in" data-ar="النتائج الرئيسية" data-en="Key Results">النتائج الرئيسية</h2>
+            <p class="section-subtitle fade-in" data-ar="الاستنتاجات الأساسية المستخلصة من تحليل بيانات الرادار" data-en="Core conclusions drawn from radar data analysis">
+                الاستنتاجات الأساسية المستخلصة من تحليل بيانات الرادار
+            </p>
+            
+            <div class="key-results-card fade-in">
+                <div class="key-results-header">
+                    <div class="key-results-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="النتائج الرئيسية للمشروع" data-en="Project Key Results">النتائج الرئيسية للمشروع</h3>
+                </div>
+                
+                <div class="key-results-content">
+                    <p data-ar="يُظهر تحليل بيانات الرادار من القمر الصناعي Sentinel-1 (استقطابي VV و VH) تغيّرات كبيرة في مشهد غزة قبل الحرب وبعدها. فقد تراجع الغطاء النباتي، وتضررت المناطق الحضرية بشكل واسع، كما تغيرت حالة سطح الأرض. هذه النتائج تقدم دليلاً قوياً على الآثار البيئية والهيكلية للحرب." 
+                       data-en="Analysis of radar data from the Sentinel-1 satellite (VV and VH polarizations) shows significant changes in Gaza's landscape before and after the war. Vegetation cover has declined, urban areas have been extensively damaged, and the condition of the land surface has changed. These findings provide strong evidence of the war's environmental and structural impacts.">
+                        يُظهر تحليل بيانات الرادار من القمر الصناعي Sentinel-1 (استقطابي VV و VH) تغيّرات كبيرة في مشهد غزة قبل الحرب وبعدها. فقد تراجع الغطاء النباتي، وتضررت المناطق الحضرية بشكل واسع، كما تغيرت حالة سطح الأرض. هذه النتائج تقدم دليلاً قوياً على الآثار البيئية والهيكلية للحرب.
+                    </p>
+                    
+                    <h4 data-ar="الأهداف الرئيسية التي تم تحقيقها:" data-en="Main Objectives Achieved:">الأهداف الرئيسية التي تم تحقيقها:</h4>
+                    <ul class="key-results-list">
+                        <li data-ar="رصد وقياس التغيرات في الغطاء النباتي واستخدامات الأراضي" 
+                            data-en="Monitoring and measuring changes in vegetation cover and land use">
+                            رصد وقياس التغيرات في الغطاء النباتي واستخدامات الأراضي
+                        </li>
+                        <li data-ar="تقييم الأضرار التي لحقت بالمناطق الحضرية والمباني" 
+                            data-en="Assessing damage to urban areas and buildings">
+                            تقييم الأضرار التي لحقت بالمناطق الحضرية والمباني
+                        </li>
+                        <li data-ar="توفير بيانات موثوقة لدعم جهود التعافي وإعادة الإعمار" 
+                            data-en="Providing reliable data to support recovery and reconstruction efforts">
+                            توفير بيانات موثوقة لدعم جهود التعافي وإعادة الإعمار
+                        </li>
+                    </ul>
+                    
+                    <div class="project-summary">
+                        <p data-ar="توفر هذه الدراسة نموذجاً يمكن تطبيقه في مناطق الصراع الأخرى، حيث تقدم تقنيات الاستشعار عن بعد وسيلة موضوعية لتقييم الأضرار ومراقبة عمليات التعافي. كما تبرز أهمية الاستثمار في البنية التحتية لرصد الأرض لتحسين قدرتنا على الاستجابة للكوارث والأزمات الإنسانية." 
+                           data-en="This study provides a model that can be applied to other conflict areas, as remote sensing technologies offer an objective means of assessing damage and monitoring recovery processes. It also highlights the importance of investing in Earth observation infrastructure to improve our ability to respond to disasters and humanitarian crises.">
+                            توفر هذه الدراسة نموذجاً يمكن تطبيقه في مناطق الصراع الأخرى، حيث تقدم تقنيات الاستشعار عن بعد وسيلة موضوعية لتقييم الأضرار ومراقبة عمليات التعافي. كما تبرز أهمية الاستثمار في البنية التحتية لرصد الأرض لتحسين قدرتنا على الاستجابة للكوارث والأزمات الإنسانية.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="data-section">
+        <div class="container">
+            <h2 class="section-title fade-in" data-ar="المراجع والموارد" data-en="Resources & References">المراجع والموارد</h2>
+            
+            <div class="resources-grid">
+                <div class="resource-card fade-in">
+                    <div class="resource-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="مصادر البيانات" data-en="Data Sources">مصادر البيانات</h3>
+                    <ul class="resource-list">
+                        <li>
+                            <a href="https://search.earthdata.nasa.gov/search" target="_blank" class="resource-link"
+                               data-ar="بحث بيانات ناسا الأرضية" data-en="NASA Earthdata Search">
+                                بحث بيانات ناسا الأرضية
+                            </a>
+                            <p class="resource-description" data-ar="يتيح اكتشاف البيانات والبحث والمقارنة والتصور والوصول عبر بيانات علوم الأرض التابعة لناسا" 
+                               data-en="Enables data discovery, search, comparison, visualization, and access across NASA's Earth science data holdings">
+                                يتيح اكتشاف البيانات والبحث والمقارنة والتصور والوصول عبر بيانات علوم الأرض التابعة لناسا
+                            </p>
+                        </li>
+                        <li>
+                            <a href="https://search.asf.alaska.edu/#/" target="_blank" class="resource-link"
+                               data-ar="منشأة ألاسكا للأقمار الصناعية (ASF)" data-en="Alaska Satellite Facility (ASF) Data Search">
+                                منشأة ألاسكا للأقمار الصناعية (ASF)
+                            </a>
+                            <p class="resource-description" data-ar="تدير ASF أرشيف ناسا لبيانات الرادار وتوفر خدمات للباحثين لدعم برنامج أنظمة بيانات علوم الأرض التابع لناسا" 
+                               data-en="The ASF operates the NASA archive of SAR data and provides services to researchers supporting NASA's Earth Science Data Systems Program">
+                                تدير ASF أرشيف ناسا لبيانات الرادار وتوفر خدمات للباحثين لدعم برنامج أنظمة بيانات علوم الأرض التابع لناسا
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="resource-card fade-in">
+                    <div class="resource-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="مواد التعلم" data-en="Learning Materials">مواد التعلم</h3>
+                    <ul class="resource-list">
+                        <li>
+                            <a href="https://www.earthdata.nasa.gov/learn/earth-observation-data-basics/sar" target="_blank" class="resource-link"
+                               data-ar="مقدمة إلى الرادار ذي الفتحة الاصطناعية (SAR)" data-en="Introduction to Synthetic Aperture Radar (SAR)">
+                                مقدمة إلى الرادار ذي الفتحة الاصطناعية (SAR)
+                            </a>
+                            <p class="resource-description" data-ar="تعلم أساسيات بيانات SAR، من أدوار التردد والطول الموجي، إلى الاستقطاب وآليات التشتت" 
+                               data-en="Learn the basics about SAR data, from the roles of frequency and wavelength, to polarization and scattering mechanisms">
+                                تعلم أساسيات بيانات SAR، من أدوار التردد والطول الموجي، إلى الاستقطاب وآليات التشتت
+                            </p>
+                        </li>
+                        <li>
+                            <a href="https://appliedsciences.nasa.gov/what-we-do/capacity-building/arset" target="_blank" class="resource-link"
+                               data-ar="تدريبات ARSET التابعة لناسا" data-en="NASA ARSET Trainings">
+                                تدريبات ARSET التابعة لناسا
+                            </a>
+                            <p class="resource-description" data-ar="دورات مجانية عبر الإنترنت حول تطبيقات الاستشعار بالرادار" 
+                               data-en="Free online courses on SAR remote sensing applications">
+                                دورات مجانية عبر الإنترنت حول تطبيقات الاستشعار بالرادار
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="resource-card fade-in">
+                    <div class="resource-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                            <path d="M2 2l7.586 7.586"/>
+                            <circle cx="11" cy="11" r="2"/>
+                        </svg>
+                    </div>
+                    <h3 data-ar="الخطوات التالية" data-en="Next Steps">الخطوات التالية</h3>
+                    <ul class="resource-list">
+                        <li>
+                            <p class="resource-description" data-ar="دمج التعلم الآلي للكشف الآلي عن التغيرات" 
+                               data-en="Integrate machine learning for automated change detection">
+                                دمج التعلم الآلي للكشف الآلي عن التغيرات
+                            </p>
+                        </li>
+                        <li>
+                            <p class="resource-description" data-ar="الجمع بين بيانات SAR والبصرية للتحليل المعزز" 
+                               data-en="Combine SAR with optical data for enhanced analysis">
+                                الجمع بين بيانات SAR والبصرية للتحليل المعزز
+                            </p>
+                        </li>
+                        <li>
+                            <p class="resource-description" data-ar="تطوير نماذج متقدمة للتنبؤ بالتغيرات البيئية" 
+                               data-en="Develop advanced models for predicting environmental changes">
+                                تطوير نماذج متقدمة للتنبؤ بالتغيرات البيئية
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Create stars for the background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size (1-3px)
+                const size = Math.random() * 2 + 1;
+                
+                // Random animation duration (3-8s)
+                const duration = Math.random() * 5 + 3;
+                
+                // Random delay (0-5s)
+                const delay = Math.random() * 5;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--delay', `${delay}s`);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Language Management
+        let currentLang = 'ar';
+        
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const translatableElements = document.querySelectorAll('[data-ar]');
+        
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // Update language buttons
+            langButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            
+            // Update all translatable elements
+            translatableElements.forEach(element => {
+                if (element.dataset[lang]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = element.dataset[lang];
+                    } else {
+                        element.innerHTML = element.dataset[lang];
+                    }
+                }
+            });
+            
+            // Update direction
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        }
+        
+        langButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchLanguage(btn.dataset.lang);
+            });
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Before/After Slider
+        const beforeAfter = document.querySelector('.before-after');
+        const beforeImage = document.querySelector('.before-image');
+        const sliderHandle = document.querySelector('.slider-handle');
+        
+        let isDragging = false;
+        
+        function updateSliderPosition(clientX) {
+            const rect = beforeAfter.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+            const clampedPercentage = Math.max(0, Math.min(100, percentage));
+            
+            beforeImage.style.clipPath = `inset(0 ${100 - clampedPercentage}% 0 0)`;
+            sliderHandle.style.left = `${clampedPercentage}%`;
+        }
+        
+        sliderHandle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                updateSliderPosition(e.clientX);
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        // Touch events for mobile
+        sliderHandle.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length > 0) {
+                updateSliderPosition(e.touches[0].clientX);
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    mobileMenu.classList.remove('active');
+                }
+            });
+        });
+        
+        // Update active navigation link on scroll
+        function updateActiveNavLink() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+            
+            let currentSection = '';
+            const scrollPosition = window.scrollY + 100;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    currentSection = section.getAttribute('id') || 'home';
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSection}` || 
+                   (currentSection === 'home' && link.getAttribute('href') === '#')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Header scroll effect
+        function updateHeader() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+        
+        // Fade in animation on scroll
+        function checkFadeIn() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Image Modal Functionality
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalCaption = document.getElementById('modalCaption');
+        const modalClose = document.getElementById('modalClose');
+        const modalPrev = document.getElementById('modalPrev');
+        const modalNext = document.getElementById('modalNext');
+        
+        let currentImageIndex = 0;
+        let images = [];
+        
+        // Initialize image modal
+        function initImageModal() {
+            // Get all zoomable images
+            images = Array.from(document.querySelectorAll('.zoomable-image'));
+            
+            // Add click event to each image
+            images.forEach((image, index) => {
+                image.addEventListener('click', () => {
+                    openImageModal(index);
+                });
+            });
+            
+            // Modal close event
+            modalClose.addEventListener('click', closeImageModal);
+            
+            // Modal navigation events
+            modalPrev.addEventListener('click', showPrevImage);
+            modalNext.addEventListener('click', showNextImage);
+            
+            // Close modal when clicking outside the image
+            imageModal.addEventListener('click', (e) => {
+                if (e.target === imageModal) {
+                    closeImageModal();
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (imageModal.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        closeImageModal();
+                    } else if (e.key === 'ArrowLeft') {
+                        showPrevImage();
+                    } else if (e.key === 'ArrowRight') {
+                        showNextImage();
+                    }
+                }
+            });
+        }
+        
+        function openImageModal(index) {
+            currentImageIndex = index;
+            const image = images[currentImageIndex];
+            
+            // Set modal image and caption
+            modalImage.src = image.src;
+            modalImage.alt = image.alt;
+            
+            // Set caption based on current language
+            const caption = image.dataset.caption;
+            if (caption) {
+                modalCaption.textContent = caption;
+            } else {
+                modalCaption.textContent = image.alt;
+            }
+            
+            // Show modal
+            imageModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeImageModal() {
+            imageModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            openImageModal(currentImageIndex);
+        }
+        
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            openImageModal(currentImageIndex);
+        }
+        
+        // Event listeners
+        window.addEventListener('scroll', () => {
+            updateActiveNavLink();
+            updateHeader();
+            checkFadeIn();
+        });
+        
+        window.addEventListener('load', () => {
+            createStars();
+            updateActiveNavLink();
+            updateHeader();
+            checkFadeIn();
+            initImageModal();
+        });
+
+        // Initialize
+        checkFadeIn();
+    </script>
+</body>
+</html>
